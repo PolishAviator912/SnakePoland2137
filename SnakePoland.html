@@ -314,7 +314,7 @@
     </style>
 </head>
 <body>
-    <div id="version">WERSJA: Beta 1.3</div>
+    <div id="version">WERSJA: Beta 1.0</div>
 
     <div id="start-screen">
         <h1>🐍 SNAKE POLSKA 🇵🇱</h1>
@@ -364,7 +364,6 @@
     <div id="music-controls">
         <span>Muzyka:</span>
         <button class="music-option active" id="default-music">Default</button>
-        <button class="music-option" id="default2-music">Default2</button>
         <button class="music-option" id="custom-music">Dodaj własną</button>
         <button id="music-toggle">Wyłącz</button>
     </div>
@@ -372,10 +371,6 @@
     <!-- Dźwięki -->
     <audio id="default-audio" loop>
         <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="default2-audio" loop>
-        <!-- TUTAJ WPISZ ŚCIEŻKĘ DO PLIKU AUDIO DLA DEFAULT2 -->
-        <source src="Deafult2Song.mp3" type="audio/mpeg">
     </audio>
     <audio id="custom-audio" loop></audio>
     
@@ -424,11 +419,9 @@
             
             // Elementy do obsługi muzyki
             const musicToggle = document.getElementById('music-toggle');
-            const MusicBtn = document.getElementById('default-music');
-            const default2MusicBtn = document.getElementById('default2-music');
+            const defaultMusicBtn = document.getElementById('default-music');
             const customMusicBtn = document.getElementById('custom-music');
             const defaultAudio = document.getElementById('default-audio');
-            const default2Audio = document.getElementById('default2-audio');
             const customAudio = document.getElementById('custom-audio');
             
             // Dźwięki kierunków
@@ -446,7 +439,6 @@
             
             // Ustawienia początkowe
             defaultAudio.volume = 0.3;
-            default2Audio.volume = 0.3;
             customAudio.volume = 0.3;
             soundUp.volume = 0.3;
             soundDown.volume = 0.3;
@@ -461,7 +453,6 @@
             // Funkcja pomocnicza do odtwarzania audio
             function playAudio(audioElement) {
                 defaultAudio.pause();
-                default2Audio.pause();
                 customAudio.pause();
                 
                 currentAudio = audioElement;
@@ -497,17 +488,8 @@
             // Przycisk Default
             defaultMusicBtn.addEventListener('click', () => {
                 defaultMusicBtn.classList.add('active');
-                default2MusicBtn.classList.remove('active');
                 customMusicBtn.classList.remove('active');
                 playAudio(defaultAudio);
-            });
-
-            // Przycisk Default2
-            default2MusicBtn.addEventListener('click', () => {
-                default2MusicBtn.classList.add('active');
-                defaultMusicBtn.classList.remove('active');
-                customMusicBtn.classList.remove('active');
-                playAudio(default2Audio);
             });
 
             // Przycisk Dodaj własną
@@ -524,7 +506,6 @@
                         
                         customMusicBtn.classList.add('active');
                         defaultMusicBtn.classList.remove('active');
-                        default2MusicBtn.classList.remove('active');
                         playAudio(customAudio);
                     }
                 });
@@ -654,16 +635,16 @@
                 score = 0;
                 scoreDisplay.textContent = `Wynik: ${score}`;
                 
-                // Ustaw węża na środku planszy - pionowo, skierowany w górę
+                // Ustaw węża na środku planszy
                 const startX = Math.floor(tileCount / 2) * gridSize;
                 const startY = Math.floor(tileCount / 2) * gridSize;
                 
                 for (let i = snakeLength - 1; i >= 0; i--) {
-                    snake.push({ x: startX, y: startY + (i * gridSize) });
+                    snake.push({ x: startX - (i * gridSize), y: startY });
                 }
                 
-                xVelocity = 0;
-                yVelocity = -gridSize;
+                xVelocity = gridSize;
+                yVelocity = 0;
                 
                 placeFood();
                 resetSpecialFood();
@@ -772,7 +753,7 @@
             function checkCollision() {
                 const head = snake[0];
                 
-                // Kolizja ze ścianami
+                // Kolizja ze ścianami (teraz sprawdzamy czy głowa węża jest poza planszą)
                 if (
                     head.x < 0 || 
                     head.y < 0 || 
@@ -780,14 +761,12 @@
                     head.y >= canvas.height
                 ) {
                     gameOver();
-                    return;
                 }
                 
-                // Kolizja z własnym ciałem (pomijamy głowę)
-                for (let i = 4; i < snake.length; i++) {
+                // Kolizja z własnym ciałem
+                for (let i = 1; i < snake.length; i++) {
                     if (head.x === snake[i].x && head.y === snake[i].y) {
                         gameOver();
-                        return;
                     }
                 }
             }
