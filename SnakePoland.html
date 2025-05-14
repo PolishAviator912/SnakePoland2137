@@ -314,7 +314,7 @@
     </style>
 </head>
 <body>
-    <div id="version">WERSJA: Beta 1.0</div>
+    <div id="version">WERSJA: Beta 1.3</div>
 
     <div id="start-screen">
         <h1>🐍 SNAKE POLSKA 🇵🇱</h1>
@@ -364,6 +364,7 @@
     <div id="music-controls">
         <span>Muzyka:</span>
         <button class="music-option active" id="default-music">Default</button>
+        <button class="music-option" id="default2-music">Default2</button>
         <button class="music-option" id="custom-music">Dodaj własną</button>
         <button id="music-toggle">Wyłącz</button>
     </div>
@@ -371,6 +372,10 @@
     <!-- Dźwięki -->
     <audio id="default-audio" loop>
         <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="default2-audio" loop>
+        <!-- TUTAJ WPISZ ŚCIEŻKĘ DO PLIKU AUDIO DLA DEFAULT2 -->
+        <source src="Deafult2Song.mp3" type="audio/mpeg">
     </audio>
     <audio id="custom-audio" loop></audio>
     
@@ -419,9 +424,11 @@
             
             // Elementy do obsługi muzyki
             const musicToggle = document.getElementById('music-toggle');
-            const defaultMusicBtn = document.getElementById('default-music');
+            const MusicBtn = document.getElementById('default-music');
+            const default2MusicBtn = document.getElementById('default2-music');
             const customMusicBtn = document.getElementById('custom-music');
             const defaultAudio = document.getElementById('default-audio');
+            const default2Audio = document.getElementById('default2-audio');
             const customAudio = document.getElementById('custom-audio');
             
             // Dźwięki kierunków
@@ -439,6 +446,7 @@
             
             // Ustawienia początkowe
             defaultAudio.volume = 0.3;
+            default2Audio.volume = 0.3;
             customAudio.volume = 0.3;
             soundUp.volume = 0.3;
             soundDown.volume = 0.3;
@@ -453,6 +461,7 @@
             // Funkcja pomocnicza do odtwarzania audio
             function playAudio(audioElement) {
                 defaultAudio.pause();
+                default2Audio.pause();
                 customAudio.pause();
                 
                 currentAudio = audioElement;
@@ -488,8 +497,17 @@
             // Przycisk Default
             defaultMusicBtn.addEventListener('click', () => {
                 defaultMusicBtn.classList.add('active');
+                default2MusicBtn.classList.remove('active');
                 customMusicBtn.classList.remove('active');
                 playAudio(defaultAudio);
+            });
+
+            // Przycisk Default2
+            default2MusicBtn.addEventListener('click', () => {
+                default2MusicBtn.classList.add('active');
+                defaultMusicBtn.classList.remove('active');
+                customMusicBtn.classList.remove('active');
+                playAudio(default2Audio);
             });
 
             // Przycisk Dodaj własną
@@ -506,6 +524,7 @@
                         
                         customMusicBtn.classList.add('active');
                         defaultMusicBtn.classList.remove('active');
+                        default2MusicBtn.classList.remove('active');
                         playAudio(customAudio);
                     }
                 });
@@ -531,8 +550,14 @@
                 isMusicPlaying = !isMusicPlaying;
             });
 
-            const gridSize = 20;
-            const tileCount = canvas.width / gridSize;
+            // Ustawienia planszy 20x20 kratek
+            const gridSize = 20; // Rozmiar pojedynczej kratki w pikselach
+            const tileCount = 20; // Liczba kratek w każdym wierszu/kolumnie
+            
+            // Dostosuj rozmiar canvas do nowych ustawień
+            canvas.width = gridSize * tileCount;
+            canvas.height = gridSize * tileCount;
+            
             let score = 0;
             let gameSpeed = 150;
             
@@ -629,12 +654,16 @@
                 score = 0;
                 scoreDisplay.textContent = `Wynik: ${score}`;
                 
+                // Ustaw węża na środku planszy - pionowo, skierowany w górę
+                const startX = Math.floor(tileCount / 2) * gridSize;
+                const startY = Math.floor(tileCount / 2) * gridSize;
+                
                 for (let i = snakeLength - 1; i >= 0; i--) {
-                    snake.push({ x: i * gridSize, y: 0 });
+                    snake.push({ x: startX, y: startY + (i * gridSize) });
                 }
                 
-                xVelocity = gridSize;
-                yVelocity = 0;
+                xVelocity = 0;
+                yVelocity = -gridSize;
                 
                 placeFood();
                 resetSpecialFood();
@@ -743,6 +772,7 @@
             function checkCollision() {
                 const head = snake[0];
                 
+                // Kolizja ze ścianami
                 if (
                     head.x < 0 || 
                     head.y < 0 || 
@@ -750,43 +780,53 @@
                     head.y >= canvas.height
                 ) {
                     gameOver();
+                    return;
                 }
                 
-                for (let i = 1; i < snake.length; i++) {
+                // Kolizja z własnym ciałem (pomijamy głowę)
+                for (let i = 4; i < snake.length; i++) {
                     if (head.x === snake[i].x && head.y === snake[i].y) {
                         gameOver();
+                        return;
                     }
                 }
             }
             
             // Rysowanie gry
             function drawGame() {
+                // Tło - czarna plansza
                 ctx.fillStyle = 'black';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 
+                // Siatka 20x20
                 ctx.strokeStyle = '#333';
                 ctx.lineWidth = 0.5;
-                for (let i = 0; i < tileCount; i++) {
+                for (let i = 0; i <= tileCount; i++) {
+                    // Linie pionowe
                     ctx.beginPath();
                     ctx.moveTo(i * gridSize, 0);
                     ctx.lineTo(i * gridSize, canvas.height);
                     ctx.stroke();
                     
+                    // Linie poziome
                     ctx.beginPath();
                     ctx.moveTo(0, i * gridSize);
                     ctx.lineTo(canvas.width, i * gridSize);
                     ctx.stroke();
                 }
                 
+                // Rysowanie węża
                 for (let i = 0; i < snake.length; i++) {
                     ctx.fillStyle = 'lime';
                     ctx.fillRect(snake[i].x, snake[i].y, gridSize - 1, gridSize - 1);
                     
+                    // Rysowanie oczu na głowie węża
                     if (i === 0) {
                         ctx.fillStyle = 'white';
                         ctx.fillRect(snake[i].x + 5, snake[i].y + 5, 4, 4);
                         ctx.fillRect(snake[i].x + 11, snake[i].y + 5, 4, 4);
                         
+                        // Rysowanie języka w kierunku ruchu
                         ctx.fillStyle = 'red';
                         if (xVelocity > 0) {
                             ctx.fillRect(snake[i].x + gridSize - 3, snake[i].y + 8, 3, 4);
@@ -849,6 +889,7 @@
                 foodX = Math.floor(Math.random() * tileCount) * gridSize;
                 foodY = Math.floor(Math.random() * tileCount) * gridSize;
                 
+                // Sprawdź czy jedzenie nie pojawiło się na wężu
                 for (let i = 0; i < snake.length; i++) {
                     if (snake[i].x === foodX && snake[i].y === foodY) {
                         placeFood();
@@ -880,6 +921,7 @@
                     return;
                 }
                 
+                // Zapobiegaj odwróceniu kierunku o 180 stopni
                 if (
                     (e.key === 'ArrowUp' && yVelocity === gridSize) ||
                     (e.key === 'ArrowDown' && yVelocity === -gridSize) ||
