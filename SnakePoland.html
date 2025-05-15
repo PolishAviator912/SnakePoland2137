@@ -643,7 +643,8 @@
                     snake.push({ x: startX - (i * gridSize), y: startY });
                 }
                 
-                xVelocity = gridSize;
+                // Zmiana: Początkowa prędkość ustawiona na 0 - gracz musi nacisnąć strzałkę, aby rozpocząć
+                xVelocity = 0;
                 yVelocity = 0;
                 
                 placeFood();
@@ -708,7 +709,7 @@
             
             // Główna pętla gry
             function gameLoop() {
-                if (gamePaused) return;
+                if (gamePaused || (xVelocity === 0 && yVelocity === 0)) return; // Nie ruszaj się, jeśli prędkość jest 0
                 
                 updateSnake();
                 checkCollision();
@@ -813,7 +814,7 @@
                             ctx.fillRect(snake[i].x, snake[i].y + 8, 3, 4);
                         } else if (yVelocity > 0) {
                             ctx.fillRect(snake[i].x + 8, snake[i].y + gridSize - 3, 4, 3);
-                        } else {
+                        } else if (yVelocity < 0) {
                             ctx.fillRect(snake[i].x + 8, snake[i].y, 4, 3);
                         }
                     }
