@@ -138,6 +138,14 @@
             display: none;
         }
         
+        #progress-display {
+            margin-top: 5px;
+            font-size: 18px;
+            color: gold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            display: none;
+        }
+        
         #game-over {
             position: absolute;
             top: 50%;
@@ -153,7 +161,22 @@
             max-width: 300px;
         }
         
-        #restart-btn, #end-game-btn {
+        #win-screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+            width: 80%;
+            max-width: 300px;
+        }
+        
+        #restart-btn, #end-game-btn, #win-restart-btn, #win-end-game-btn {
             margin-top: 15px;
             padding: 10px 20px;
             font-size: 18px;
@@ -166,20 +189,20 @@
             margin: 10px;
         }
         
-        #restart-btn {
+        #restart-btn, #win-restart-btn {
             background-color: #4CAF50;
         }
         
-        #restart-btn:hover {
+        #restart-btn:hover, #win-restart-btn:hover {
             background-color: #45a049;
             transform: scale(1.05);
         }
         
-        #end-game-btn {
+        #end-game-btn, #win-end-game-btn {
             background-color: #f44336;
         }
         
-        #end-game-btn:hover {
+        #end-game-btn:hover, #win-end-game-btn:hover {
             background-color: #d32f2f;
             transform: scale(1.05);
         }
@@ -223,7 +246,41 @@
             font-weight: bold;
         }
         
-        #play-btn {
+        #game-mode-menu {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            color: white;
+        }
+        
+        .game-mode-option {
+            margin: 10px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .game-mode-option:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .game-mode-option.selected {
+            background-color: rgba(76, 175, 80, 0.7);
+            font-weight: bold;
+        }
+        
+        .mode-description {
+            font-size: 14px;
+            color: #ccc;
+            display: block;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        #play-btn, #mode-select-btn {
             margin-top: 20px;
             padding: 10px 20px;
             font-size: 18px;
@@ -235,7 +292,7 @@
             transition: all 0.3s;
         }
         
-        #play-btn:hover {
+        #play-btn:hover, #mode-select-btn:hover {
             background-color: #45a049;
             transform: scale(1.05);
         }
@@ -297,7 +354,6 @@
 
         .eat-effect {
             position: absolute;
-            color: gold;
             font-size: 20px;
             font-weight: bold;
             pointer-events: none;
@@ -311,10 +367,73 @@
                 opacity: 0;
             }
         }
+
+        /* Nowe style dla potwierdzenia wyjścia i przycisków back */
+        #exit-confirm {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+            width: 80%;
+            max-width: 300px;
+            z-index: 1000;
+        }
+        
+        #exit-confirm p {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        
+        #exit-yes, #exit-no {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        #exit-yes {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        #exit-no {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        #exit-yes:hover, #exit-no:hover {
+            transform: scale(1.05);
+        }
+
+        .back-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background-color: #0b7dda;
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
-    <div id="version">WERSJA: Beta 1.0</div>
+    <div id="version">WERSJA: Beta 1.4</div>
 
     <div id="start-screen">
         <h1>🐍 SNAKE POLSKA 🇵🇱</h1>
@@ -328,7 +447,7 @@
                 <p>Efekty Dźwiękowe:</p>
                 <p>Zmiana kierunku: Google Snake</p>
                 <p>Zjedzenie Jabłka: Google Snake</p>
-                <p>Zjedzenie Złotego Jabłka: LewisSoundeffects4uall "Angelic choir sound effect"</p>
+                <p>Zjedzenie Pieroga: LewisSoundeffects4uall "Angelic choir sound effect"</p>
             </div>
         </div>
     </div>
@@ -340,7 +459,26 @@
         <div class="difficulty-option selected" data-speed="150">Średni</div>
         <div class="difficulty-option" data-speed="100">Trudny</div>
         <div class="difficulty-option" data-speed="70">Ekspert</div>
-        <button id="play-btn">Graj!</button>
+        <div style="display: flex; justify-content: center; gap: 20px;">
+            <button class="back-btn" id="difficulty-back">Wróć</button>
+            <button id="mode-select-btn">Dalej</button>
+        </div>
+    </div>
+    
+    <div id="game-mode-menu">
+        <h2>Wybierz tryb gry</h2>
+        <div class="game-mode-option selected" data-mode="classic">
+            Klasyczny<br>
+            <span class="mode-description">(Standardowe zasady - unikaj ścian i własnego ogona, zbieraj jabłka i pierogi)</span>
+        </div>
+        <div class="game-mode-option" data-mode="infinity">
+            Nieskończoność<br>
+            <span class="mode-description">(Przechodź przez ściany i zdobądź 50 punktów, zbierając jabłka i pierogi)</span>
+        </div>
+        <div style="display: flex; justify-content: center; gap: 20px;">
+            <button class="back-btn" id="mode-back">Wróć</button>
+            <button id="play-btn">Graj!</button>
+        </div>
     </div>
     
     <div id="game-container">
@@ -351,14 +489,23 @@
             <button id="restart-btn">Zagraj ponownie</button>
             <button id="end-game-btn">Koniec gry</button>
         </div>
+        <div id="win-screen">
+            <h2>Gratulacje!</h2>
+            <p id="win-score">Twój wynik: 0</p>
+            <p id="win-message">Ukończyłeś tryb Nieskończoność!</p>
+            <button id="win-restart-btn">Zagraj ponownie</button>
+            <button id="win-end-game-btn">Koniec gry</button>
+        </div>
     </div>
     <div id="score">Wynik: 0</div>
+    <div id="progress-display"></div>
     <div id="special-timer"></div>
     
     <div class="controls">
         <p>Sterowanie:</p>
         <p>Strzałki - zmiana kierunku</p>
         <p>Spacja - pauza</p>
+        <p>ESC - wyjście do menu</p>
     </div>
 
     <div id="music-controls">
@@ -366,6 +513,12 @@
         <button class="music-option active" id="default-music">Default</button>
         <button class="music-option" id="custom-music">Dodaj własną</button>
         <button id="music-toggle">Wyłącz</button>
+    </div>
+
+    <div id="exit-confirm">
+        <p>Czy na pewno chcesz wyjść?</p>
+        <button id="exit-no">Nie</button>
+        <button id="exit-yes">Tak</button>
     </div>
 
     <!-- Dźwięki -->
@@ -401,21 +554,34 @@
             const canvas = document.getElementById('game-board');
             const ctx = canvas.getContext('2d');
             const scoreDisplay = document.getElementById('score');
+            const progressDisplay = document.getElementById('progress-display');
             const finalScoreDisplay = document.getElementById('final-score');
+            const winScoreDisplay = document.getElementById('win-score');
             const gameOverDisplay = document.getElementById('game-over');
+            const winScreen = document.getElementById('win-screen');
             const startBtn = document.getElementById('start-btn');
             const creditsBtn = document.getElementById('credits-btn');
             const restartBtn = document.getElementById('restart-btn');
             const endGameBtn = document.getElementById('end-game-btn');
+            const winRestartBtn = document.getElementById('win-restart-btn');
+            const winEndGameBtn = document.getElementById('win-end-game-btn');
             const playBtn = document.getElementById('play-btn');
+            const modeSelectBtn = document.getElementById('mode-select-btn');
             const difficultyMenu = document.getElementById('difficulty-menu');
+            const gameModeMenu = document.getElementById('game-mode-menu');
             const gameContainer = document.getElementById('game-container');
             const startScreen = document.getElementById('start-screen');
             const creditsContent = document.getElementById('credits-content');
             const youtubeLogo = document.getElementById('youtube-logo');
             const controls = document.querySelector('.controls');
             const difficultyOptions = document.querySelectorAll('.difficulty-option');
+            const gameModeOptions = document.querySelectorAll('.game-mode-option');
             const specialTimer = document.getElementById('special-timer');
+            const exitConfirm = document.getElementById('exit-confirm');
+            const exitYes = document.getElementById('exit-yes');
+            const exitNo = document.getElementById('exit-no');
+            const difficultyBack = document.getElementById('difficulty-back');
+            const modeBack = document.getElementById('mode-back');
             
             // Elementy do obsługi muzyki
             const musicToggle = document.getElementById('music-toggle');
@@ -433,6 +599,13 @@
             // Dźwięki owoców
             const soundEatNormal = document.getElementById('sound-eat-normal');
             const soundEatGolden = document.getElementById('sound-eat-golden');
+
+            // Obraz pieroga
+            let pierogImage = new Image();
+            pierogImage.src = 'pierog.png';
+            pierogImage.onerror = function() {
+                console.log('Nie można załadować obrazu pieroga, używam zastępczego wizerunku');
+            };
 
             let currentAudio = defaultAudio;
             let isMusicPlaying = true;
@@ -470,11 +643,11 @@
             }
 
             // Funkcja pokazująca efekt zjedzenia
-            function showEatEffect(x, y, isGolden) {
+            function showEatEffect(x, y, isPierog) {
                 const effect = document.createElement('div');
                 effect.className = 'eat-effect';
-                effect.textContent = isGolden ? '+5' : '+1';
-                effect.style.color = isGolden ? 'gold' : '#ff3333';
+                effect.textContent = isPierog ? '+5 (Pieróg!)' : '+1';
+                effect.style.color = isPierog ? 'gold' : '#ff3333';
                 effect.style.left = `${x + 10}px`;
                 effect.style.top = `${y - 10}px`;
                 document.body.appendChild(effect);
@@ -541,6 +714,8 @@
             
             let score = 0;
             let gameSpeed = 150;
+            let gameMode = 'classic'; // 'classic' lub 'infinity'
+            const winScore = 50; // Wynik potrzebny do wygranej w trybie nieskończoność
             
             let snake = [];
             let snakeLength = 3;
@@ -551,18 +726,22 @@
             let foodX = 0;
             let foodY = 0;
             
-            // Zmienne dla specjalnego owocu
+            // Zmienne dla specjalnego jedzenia (pieroga)
             let specialFoodX = -1;
             let specialFoodY = -1;
             let specialFoodActive = false;
             let specialFoodTimer = 0;
             let specialFoodInterval = 15000; // 15 sekund
-            let specialFoodScore = 5; // Punkty za specjalny owoc
+            let specialFoodScore = 5; // Punkty za pieroga
             
             let gameRunning = false;
             let gamePaused = false;
             let gameInterval;
             let specialFoodTimeInterval;
+            
+            // Nowa zmienna - czas rozpoczęcia gry
+            let gameStartTime = 0;
+            const collisionGracePeriod = 1000; // 1 sekunda ochrony przed kolizją z ciałem
             
             // Obsługa przycisku Credits
             creditsBtn.addEventListener('click', () => {
@@ -587,6 +766,20 @@
                 difficultyMenu.style.display = 'block';
             });
             
+            // Przycisk Wróć w menu trudności
+            difficultyBack.addEventListener('click', () => {
+                difficultyMenu.style.display = 'none';
+                startScreen.querySelector('h1').style.display = 'block';
+                startBtn.style.display = 'block';
+                creditsBtn.style.display = 'block';
+            });
+            
+            // Przycisk Wróć w menu trybu gry
+            modeBack.addEventListener('click', () => {
+                gameModeMenu.style.display = 'none';
+                difficultyMenu.style.display = 'block';
+            });
+            
             // Wybór poziomu trudności
             difficultyOptions.forEach(option => {
                 option.addEventListener('click', () => {
@@ -596,9 +789,24 @@
                 });
             });
             
+            // Przycisk Dalej (po wyborze trudności)
+            modeSelectBtn.addEventListener('click', () => {
+                difficultyMenu.style.display = 'none';
+                gameModeMenu.style.display = 'block';
+            });
+            
+            // Wybór trybu gry
+            gameModeOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    gameModeOptions.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    gameMode = option.getAttribute('data-mode');
+                });
+            });
+            
             // Przycisk Graj!
             playBtn.addEventListener('click', () => {
-                difficultyMenu.style.display = 'none';
+                gameModeMenu.style.display = 'none';
                 startScreen.style.display = 'none';
                 gameContainer.style.display = 'block';
                 scoreDisplay.style.display = 'block';
@@ -612,14 +820,28 @@
                 resetToStartScreen();
             });
             
+            // Przycisk Koniec gry (ekran wygranej)
+            winEndGameBtn.addEventListener('click', () => {
+                resetToStartScreen();
+            });
+            
+            // Przycisk Zagraj ponownie (ekran wygranej)
+            winRestartBtn.addEventListener('click', () => {
+                winScreen.style.display = 'none';
+                initGame();
+            });
+            
             // Reset do ekranu startowego
             function resetToStartScreen() {
                 clearInterval(gameInterval);
                 clearInterval(specialFoodTimeInterval);
                 gameContainer.style.display = 'none';
                 scoreDisplay.style.display = 'none';
+                progressDisplay.style.display = 'none';
                 controls.style.display = 'none';
                 specialTimer.style.display = 'none';
+                winScreen.style.display = 'none';
+                exitConfirm.style.display = 'none';
                 
                 startScreen.style.display = 'block';
                 startScreen.querySelector('h1').style.display = 'block';
@@ -652,6 +874,7 @@
                 
                 gameRunning = true;
                 gamePaused = false;
+                gameStartTime = Date.now(); // Zapisujemy czas rozpoczęcia gry
                 
                 if (gameInterval) clearInterval(gameInterval);
                 gameInterval = setInterval(gameLoop, gameSpeed);
@@ -660,9 +883,19 @@
                 specialFoodTimeInterval = setInterval(updateSpecialFoodTimer, 1000);
                 
                 gameOverDisplay.style.display = 'none';
+                winScreen.style.display = 'none';
+                exitConfirm.style.display = 'none';
+                
+                // Ustawienie wyświetlania postępu dla trybu nieskończoność
+                if (gameMode === 'infinity') {
+                    progressDisplay.style.display = 'block';
+                    progressDisplay.textContent = `Punkty: ${score}/${winScore}`;
+                } else {
+                    progressDisplay.style.display = 'none';
+                }
             }
             
-            // Reset specjalnego owocu
+            // Reset specjalnego jedzenia (pieroga)
             function resetSpecialFood() {
                 specialFoodActive = false;
                 specialFoodX = -1;
@@ -671,13 +904,13 @@
                 specialTimer.textContent = '';
             }
             
-            // Aktualizacja timera specjalnego owocu
+            // Aktualizacja timera specjalnego jedzenia (pieroga)
             function updateSpecialFoodTimer() {
                 if (!gameRunning || gamePaused) return;
                 
                 specialFoodTimer += 1000;
                 
-                // Sprawdź czy czas na specjalny owoc
+                // Sprawdź czy czas na pieroga
                 if (!specialFoodActive && specialFoodTimer >= specialFoodInterval) {
                     spawnSpecialFood();
                 }
@@ -685,7 +918,7 @@
                 // Aktualizuj timer na ekranie
                 if (specialFoodActive) {
                     const remaining = Math.max(0, (specialFoodInterval - (specialFoodTimer % specialFoodInterval)) / 1000);
-                    specialTimer.textContent = `Specjalny owoc: ${remaining.toFixed(0)}s`;
+                    specialTimer.textContent = `Pieróg: ${remaining.toFixed(0)}s`;
                     
                     if (remaining <= 0) {
                         resetSpecialFood();
@@ -693,7 +926,7 @@
                 }
             }
             
-            // Tworzenie specjalnego owocu
+            // Tworzenie pieroga
             function spawnSpecialFood() {
                 specialFoodActive = true;
                 specialFoodTimer = 0;
@@ -713,6 +946,7 @@
                 
                 updateSnake();
                 checkCollision();
+                checkWinCondition();
                 drawGame();
             }
             
@@ -723,23 +957,37 @@
                     y: snake[0].y + yVelocity 
                 };
                 
+                // Tryb nieskończoności - przechodzenie przez ściany
+                if (gameMode === 'infinity') {
+                    if (head.x < 0) head.x = canvas.width - gridSize;
+                    if (head.x >= canvas.width) head.x = 0;
+                    if (head.y < 0) head.y = canvas.height - gridSize;
+                    if (head.y >= canvas.height) head.y = 0;
+                }
+                
                 snake.unshift(head);
                 
-                // Sprawdź czy zjedzono zwykłe jedzenie
+                // Sprawdź czy zjedzono zwykłe jedzenie (jabłko)
                 if (head.x === foodX && head.y === foodY) {
                     snakeLength++;
                     score += 1;
                     scoreDisplay.textContent = `Wynik: ${score}`;
+                    if (gameMode === 'infinity') {
+                        progressDisplay.textContent = `Punkty: ${score}/${winScore}`;
+                    }
                     soundEatNormal.currentTime = 0;
                     soundEatNormal.play();
                     showEatEffect(foodX, foodY, false);
                     placeFood();
                 } 
-                // Sprawdź czy zjedzono specjalne jedzenie
+                // Sprawdź czy zjedzono pieroga
                 else if (specialFoodActive && head.x === specialFoodX && head.y === specialFoodY) {
                     snakeLength++;
                     score += specialFoodScore;
                     scoreDisplay.textContent = `Wynik: ${score}`;
+                    if (gameMode === 'infinity') {
+                        progressDisplay.textContent = `Punkty: ${score}/${winScore}`;
+                    }
                     soundEatGolden.currentTime = 0;
                     soundEatGolden.play();
                     showEatEffect(specialFoodX, specialFoodY, true);
@@ -750,24 +998,47 @@
                 }
             }
             
+            // Sprawdzenie warunku wygranej
+            function checkWinCondition() {
+                if (gameMode === 'infinity' && score >= winScore) {
+                    winGame();
+                }
+            }
+            
+            // Wygrana
+            function winGame() {
+                clearInterval(gameInterval);
+                clearInterval(specialFoodTimeInterval);
+                gameRunning = false;
+                winScoreDisplay.textContent = `Twój wynik: ${score}`;
+                winScreen.style.display = 'block';
+            }
+            
             // Sprawdzenie kolizji
             function checkCollision() {
                 const head = snake[0];
-                
-                // Kolizja ze ścianami (teraz sprawdzamy czy głowa węża jest poza planszą)
-                if (
-                    head.x < 0 || 
-                    head.y < 0 || 
-                    head.x >= canvas.width || 
-                    head.y >= canvas.height
-                ) {
-                    gameOver();
+                const currentTime = Date.now();
+                const timeSinceStart = currentTime - gameStartTime;
+
+                // W trybie klasycznym - kolizja ze ścianami
+                if (gameMode === 'classic') {
+                    if (
+                        head.x < 0 || 
+                        head.y < 0 || 
+                        head.x >= canvas.width || 
+                        head.y >= canvas.height
+                    ) {
+                        gameOver();
+                    }
                 }
                 
-                // Kolizja z własnym ciałem
-                for (let i = 1; i < snake.length; i++) {
-                    if (head.x === snake[i].x && head.y === snake[i].y) {
-                        gameOver();
+                // Kolizja z własnym ciałem - ignoruj pierwsze 3 segmenty i sprawdzaj tylko po upływie czasu ochronnego
+                if (timeSinceStart > collisionGracePeriod) {
+                    // Sprawdzaj kolizję tylko z segmentami, które nie są bezpośrednio za głową
+                    for (let i = 4; i < snake.length; i++) {
+                        if (head.x === snake[i].x && head.y === snake[i].y) {
+                            gameOver();
+                        }
                     }
                 }
             }
@@ -822,9 +1093,9 @@
                 
                 drawApple();
                 
-                // Rysuj specjalny owoc jeśli jest aktywny
+                // Rysuj pieroga jeśli jest aktywny
                 if (specialFoodActive) {
-                    drawSpecialFood();
+                    drawPierog();
                 }
             }
             
@@ -845,26 +1116,52 @@
                 ctx.fill();
             }
             
-            // Rysowanie specjalnego owocu
-            function drawSpecialFood() {
-                ctx.fillStyle = 'gold';
-                ctx.beginPath();
-                ctx.arc(specialFoodX + gridSize/2, specialFoodY + gridSize/2, gridSize/2 - 2, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // Gwiazdka na specjalnym owocu
-                ctx.fillStyle = 'white';
-                ctx.beginPath();
-                ctx.moveTo(specialFoodX + gridSize/2, specialFoodY + 2);
-                ctx.lineTo(specialFoodX + gridSize/2 + 4, specialFoodY + gridSize - 4);
-                ctx.lineTo(specialFoodX + 2, specialFoodY + gridSize/2 - 2);
-                ctx.lineTo(specialFoodX + gridSize - 2, specialFoodY + gridSize/2 - 2);
-                ctx.lineTo(specialFoodX + gridSize/2 - 4, specialFoodY + gridSize - 4);
-                ctx.closePath();
-                ctx.fill();
+            // Rysowanie pieroga
+            function drawPierog() {
+                if (pierogImage.complete && pierogImage.naturalWidth !== 0) {
+                    // Jeśli obraz pieroga został załadowany, użyj go
+                    ctx.drawImage(pierogImage, specialFoodX, specialFoodY, gridSize, gridSize);
+                } else {
+                    // Zastępczy wizerunek pieroga (prosty kształt)
+                    ctx.fillStyle = '#F5DEB3'; // Kolor ciasta
+                    ctx.beginPath();
+                    ctx.ellipse(
+                        specialFoodX + gridSize/2, 
+                        specialFoodY + gridSize/2, 
+                        gridSize/2 - 2, 
+                        gridSize/3, 
+                        0, 0, Math.PI * 2
+                    );
+                    ctx.fill();
+                    
+                    // Brzeg pieroga
+                    ctx.strokeStyle = '#D2B48C';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.ellipse(
+                        specialFoodX + gridSize/2, 
+                        specialFoodY + gridSize/2, 
+                        gridSize/2 - 2, 
+                        gridSize/3, 
+                        0, 0, Math.PI * 2
+                    );
+                    ctx.stroke();
+                    
+                    // Farsz (widoczny przez brzeg)
+                    ctx.fillStyle = '#8B4513';
+                    ctx.beginPath();
+                    ctx.ellipse(
+                        specialFoodX + gridSize/2, 
+                        specialFoodY + gridSize/2, 
+                        gridSize/2 - 4, 
+                        gridSize/3 - 2, 
+                        0, 0, Math.PI * 2
+                    );
+                    ctx.fill();
+                }
             }
             
-            // Umieść jedzenie
+            // Umieść jedzenie (jabłko)
             function placeFood() {
                 foodX = Math.floor(Math.random() * tileCount) * gridSize;
                 foodY = Math.floor(Math.random() * tileCount) * gridSize;
@@ -889,7 +1186,7 @@
             
             // Obsługa klawiatury
             document.addEventListener('keydown', (e) => {
-                if (!gameRunning) return;
+                if (!gameRunning && e.key !== 'Escape') return;
                 
                 if (e.key === ' ') {
                     gamePaused = !gamePaused;
@@ -897,6 +1194,15 @@
                         currentAudio.pause();
                     } else if (!gamePaused && isMusicPlaying) {
                         currentAudio.play();
+                    }
+                    return;
+                }
+                
+                if (e.key === 'Escape') {
+                    if (gameRunning && !gamePaused) {
+                        gamePaused = true;
+                        exitConfirm.style.display = 'block';
+                        currentAudio.pause();
                     }
                     return;
                 }
@@ -950,6 +1256,20 @@
             restartBtn.addEventListener('click', () => {
                 gameOverDisplay.style.display = 'none';
                 initGame();
+            });
+            
+            // Obsługa przycisków potwierdzenia wyjścia
+            exitNo.addEventListener('click', () => {
+                exitConfirm.style.display = 'none';
+                gamePaused = false;
+                if (isMusicPlaying) {
+                    currentAudio.play();
+                }
+            });
+            
+            exitYes.addEventListener('click', () => {
+                exitConfirm.style.display = 'none';
+                resetToStartScreen();
             });
         });
     </script>
